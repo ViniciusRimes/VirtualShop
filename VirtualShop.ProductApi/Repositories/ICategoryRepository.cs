@@ -4,8 +4,7 @@ namespace VirtualShop.ProductApi.Repositories
 {
     public interface ICategoryRepository
     {
-        Task<IQueryable<Category>> GetAllCategoriesAsync();
-        IQueryable<Category> GetProductsByCategoryIdAsync(int categoryId);
+        Task<List<Category>> GetAllCategoriesAsync();
         Task<Category> GetCategoryByIdAsync(int id);
         Task<Category> CreateCategoryAsync(Category category);
         Task<Category> UpdateCategoryAsync(Category category);

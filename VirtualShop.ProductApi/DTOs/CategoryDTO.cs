@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using VirtualShop.ProductApi.Models;
 
 namespace VirtualShop.ProductApi.DTOs;
@@ -11,5 +12,6 @@ public class CategoryDTO
     [MinLength(3)]
     [MaxLength(100)]
     public string? Name { get; set; }
+    [JsonIgnore]
     public ICollection<Product>? Products {get; set;}
 }

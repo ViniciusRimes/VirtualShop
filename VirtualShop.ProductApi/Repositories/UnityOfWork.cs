@@ -2,47 +2,62 @@
 using VirtualShop.ProductApi.Context;
 using VirtualShop.ProductApi.Repositories;
 
-namespace APICatalog.Repositories
+public class UnityOfWork : IUnityOfWork, IDisposable
 {
-    public class UnityOfWork : IUnityOfWork, IDisposable
+    private readonly AppDBContext _context;
+    private IProductRepository _productRepository;
+    private ICategoryRepository _categoryRepository;
+
+    public IProductRepository ProductRepository
     {
-        private IProductRepository? _productRepository;
-        private ICategoryRepository? _categoryRepository;
-        private AppDBContext _context;
-        private UnityOfWork _unityOfWork;
-
-        public UnityOfWork(AppDBContext context, UnityOfWork unityOfWork)
+        get
         {
-
-            _context = context;
-            _unityOfWork = unityOfWork;
-        }
-        public IProductRepository ProductRepository { get { return _productRepository = _productRepository ?? new ProductRepository(_context, _unityOfWork); } }
-        public ICategoryRepository CategoryRepository { get { return _categoryRepository = _categoryRepository ?? new CategoryRepository(_context, _unityOfWork); } }
-
-
-        public async Task CommitAsync()
-        {
-            try
+            if (_productRepository == null)
             {
-                await _context.SaveChangesAsync();
+                _productRepository = new ProductRepository(_context);
             }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                foreach (var entry in ex.Entries)
-                {
-                    await entry.ReloadAsync();
-                }
-
-                // Após recarregar os dados, tente salvar as alterações novamente
-                await _context.SaveChangesAsync();
-            }
+            return _productRepository;
         }
+    }
 
-        public void Dispose()
+    public ICategoryRepository CategoryRepository
+    {
+        get
         {
-            _context.Dispose();
-            GC.SuppressFinalize(this);
+            if (_categoryRepository == null)
+            {
+                _categoryRepository = new CategoryRepository(_context);
+            }
+            return _categoryRepository;
         }
+    }
+
+    public UnityOfWork(AppDBContext context)
+    {
+        _context = context;
+    }
+
+    public async Task CommitAsync()
+    {
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            foreach (var entry in ex.Entries)
+            {
+                await entry.ReloadAsync();
+            }
+
+            // Após recarregar os dados, tente salvar as alterações novamente
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public void Dispose()
+    {
+        _context.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
