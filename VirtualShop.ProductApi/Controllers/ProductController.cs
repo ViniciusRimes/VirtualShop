@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VirtualShop.ProductApi.DTOs;
+using VirtualShop.ProductApi.Models;
 using VirtualShop.ProductApi.Services;
 using VirtualShop.ProductApi.Services.Contracts;
 
 namespace VirtualShop.ProductApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -15,7 +16,7 @@ namespace VirtualShop.ProductApi.Controllers
         {
             _productService = productService;
         }
-        [HttpGet("/products")]
+        [HttpGet("products")]
         public async Task<ActionResult<IQueryable<ProductDTO>>> GetAllProductsAsync( )
         {
             var productsDTO = await _productService.GetAllProductsAsync();
@@ -25,7 +26,7 @@ namespace VirtualShop.ProductApi.Controllers
             }
             return Ok(productsDTO);
         }
-        [HttpGet("{id:int}", Name = "GetProductById")]
+        [HttpGet("products/{id:int}", Name = "GetProductById")]
         public async Task<ActionResult<ProductDTO>> GetProductByIdAsync(int id)
         {
             var productDTO = await _productService.GetProductByIdAsync(id);
@@ -35,7 +36,7 @@ namespace VirtualShop.ProductApi.Controllers
             }
             return Ok(productDTO);
         }
-        [HttpGet("/category/{id:int}")]
+        [HttpGet("category/{id:int}")]
         public async Task<ActionResult<IQueryable<ProductDTO>>> GetAllProductsByCategoryAsync(int id)
         {
             var productsDTO = await _productService.GetProductsByCategoryIdAsync(id);
@@ -45,7 +46,7 @@ namespace VirtualShop.ProductApi.Controllers
             }
             return Ok(productsDTO);
         }
-        [HttpPost]
+        [HttpPost("products")]
         public async Task<ActionResult> CreateProductAsync([FromBody] ProductDTO productDTO)
         {
             if (productDTO == null)
@@ -55,7 +56,7 @@ namespace VirtualShop.ProductApi.Controllers
             await _productService.CreateProductAsync(productDTO);
             return new CreatedAtRouteResult("GetProductById", new { id = productDTO.Id }, productDTO);
         }
-        [HttpPut("{id:int}")]
+        [HttpPut("products/{id:int}")]
         public async Task<ActionResult> UpdateProductAsync(int id, [FromBody] ProductDTO productDTO)
         {
             if (productDTO == null && id != productDTO!.Id)
@@ -65,7 +66,7 @@ namespace VirtualShop.ProductApi.Controllers
             await _productService.UpdateProductAsync(productDTO);
             return Ok(productDTO);
         }
-        [HttpDelete("{id:int}")]
+        [HttpDelete("products/{id:int}")]
         public async Task<ActionResult> DeleteProductAsync(int id)
         {
             var productDTO = await _productService.GetProductByIdAsync(id);

@@ -1,5 +1,4 @@
 ﻿using VirtualShop.ProductApi.DTOs;
-using VirtualShop.ProductApi.Models;
 
 namespace VirtualShop.ProductApi.Services.Contracts
 {
